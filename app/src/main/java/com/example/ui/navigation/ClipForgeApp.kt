@@ -224,7 +224,8 @@ fun ClipForgeApp(
                                 },
                                 onOpenProject = { projectId ->
                                     navController.navigate("project_detail/$projectId")
-                                }
+                                },
+                                onShowMessage = viewModel::showMessage
                             )
                         }
 

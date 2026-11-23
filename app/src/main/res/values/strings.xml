@@ -67,4 +67,7 @@
     <string name="action_delete_project">Delete project</string>
     <string name="action_retry">Retry</string>
     <string name="close_player">Close player</string>
+    <string name="appcheck_help_hint">Sideloaded debug APKs need this device token registered in Firebase Console → App Check → Apps → Manage debug tokens:</string>
+    <string name="action_copy_token">Copy Token</string>
+    <string name="action_open_console">Open Console</string>
 </resources>

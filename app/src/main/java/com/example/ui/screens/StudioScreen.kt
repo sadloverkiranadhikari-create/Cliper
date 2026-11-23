@@ -1,5 +1,7 @@
 package com.example.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,10 +26,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.MovieCreation
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
@@ -40,6 +44,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -53,9 +58,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,6 +72,7 @@ import com.example.data.local.ProjectWithClips
 import com.example.data.model.ClipFocus
 import com.example.data.model.DurationPreset
 import com.example.data.repository.AnalysisStage
+import com.example.firebase.getLocalAppCheckDebugToken
 import com.example.ui.viewmodel.AnalyzeUiState
 import com.example.ui.viewmodel.StudioUiState
 
@@ -78,8 +86,10 @@ fun StudioScreen(
     onAnalyzeClick: () -> Unit,
     onRetryAnalyze: () -> Unit,
     onOpenProject: (Long) -> Unit,
+    onShowMessage: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val scrollState = rememberScrollState()
     val isLoading = uiState.analyzeState is AnalyzeUiState.Loading
@@ -376,38 +386,117 @@ fun StudioScreen(
 
                 // Error Display
                 if (uiState.analyzeState is AnalyzeUiState.Error) {
+                    val errorMsg = uiState.analyzeState.message
+                    val isAppCheckError = errorMsg.contains("App Check", ignoreCase = true) ||
+                        errorMsg.contains("403", ignoreCase = true)
+                    val localDebugToken = if (isAppCheckError) {
+                        getLocalAppCheckDebugToken(context)
+                    } else null
+
                     Surface(
                         shape = MaterialTheme.shapes.small,
                         color = MaterialTheme.colorScheme.errorContainer,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
+                        Column(
                             modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.ErrorOutline,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            Text(
-                                text = uiState.analyzeState.message,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.weight(1f)
-                            )
-                            TextButton(
-                                onClick = onRetryAnalyze,
-                                modifier = Modifier.testTag("retry_analyze_button")
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Filled.Refresh,
+                                    imageVector = Icons.Filled.ErrorOutline,
                                     contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
+                                    tint = MaterialTheme.colorScheme.onErrorContainer
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = stringResource(R.string.action_retry))
+                                Text(
+                                    text = errorMsg,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                TextButton(
+                                    onClick = onRetryAnalyze,
+                                    modifier = Modifier.testTag("retry_analyze_button")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(text = stringResource(R.string.action_retry))
+                                }
+                            }
+
+                            if (isAppCheckError && !localDebugToken.isNullOrBlank()) {
+                                Text(
+                                    text = stringResource(R.string.appcheck_help_hint),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                Text(
+                                    text = localDebugToken,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString(localDebugToken))
+                                            onShowMessage("App Check debug token copied")
+                                        },
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                        ),
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.5f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .testTag("copy_appcheck_token_button")
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.ContentCopy,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(text = stringResource(R.string.action_copy_token))
+                                    }
+                                    OutlinedButton(
+                                        onClick = {
+                                            val url = "https://console.firebase.google.com/project/gen-lang-client-0430332416/appcheck/apps"
+                                            context.startActivity(
+                                                Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                            )
+                                        },
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                        ),
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.5f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .testTag("open_appcheck_console_button")
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.OpenInNew,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(text = stringResource(R.string.action_open_console))
+                                    }
+                                }
                             }
                         }
                     }

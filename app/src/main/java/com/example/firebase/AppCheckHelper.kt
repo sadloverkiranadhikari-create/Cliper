@@ -67,3 +67,18 @@ fun configureAppCheck(context: Context, intent: Intent?) {
         Log.e(TAG, "Failed to initialize Firebase App Check", e)
     }
 }
+
+fun getLocalAppCheckDebugToken(context: Context): String? {
+    if (!BuildConfig.DEBUG) return null
+    return try {
+        if (FirebaseApp.getApps(context).isEmpty()) return null
+        val persistenceKey = FirebaseApp.getInstance().persistenceKey
+        val prefs = context.getSharedPreferences(
+            "$DEBUG_STORE_PREFIX$persistenceKey",
+            Context.MODE_PRIVATE
+        )
+        prefs.getString(DEBUG_SECRET_KEY, null)?.takeIf { it.isNotBlank() }
+    } catch (_: Exception) {
+        null
+    }
+}
