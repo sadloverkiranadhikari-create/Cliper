@@ -1,0 +1,6 @@
+{
+  "name": "ClipForge",
+  "description": "AI-powered YouTube highlight detector and on-device video clipper that identifies best moments and exports MP4 clips.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

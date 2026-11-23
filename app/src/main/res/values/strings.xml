@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">ClipForge</string>
+
+    <!-- Navigation -->
+    <string name="nav_studio">Studio</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_downloads">Downloads</string>
+
+    <!-- Studio Screen -->
+    <string name="studio_badge">AI VIDEO CLIPPER</string>
+    <string name="studio_hero_title">Turn Any YouTube Link Into Viral Clips</string>
+    <string name="studio_hero_subtitle">Gemini AI detects peak hooks and timestamps automatically. Attach a source video or MP4 URL to trim and download clips straight to your device.</string>
+    <string name="youtube_url_label">YouTube Video Link</string>
+    <string name="youtube_url_placeholder">https://youtu.be/... or youtube.com/watch?v=...</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_clear">Clear</string>
+    <string name="clip_focus_label">Clip Style</string>
+    <string name="clip_duration_label">Target Clip Length</string>
+    <string name="action_analyze_clips">Analyze &amp; Auto-Clip</string>
+    <string name="analyzing_metadata">Fetching YouTube video details…</string>
+    <string name="analyzing_ai">Gemini AI is scanning for highlight clips…</string>
+    <string name="recent_project_header">Continue Editing</string>
+    <string name="how_it_works_title">How Auto-Clipping &amp; Downloads Work</string>
+    <string name="how_it_works_body">1. Paste a public YouTube link — Gemini AI finds the best highlight moments with timestamps, captions, and hook scores.\n2. Attach your creator video file (Photo Picker) or a direct MP4 stream URL to render and save trimmed MP4 clips to Movies/ClipForge.</string>
+
+    <!-- Project Detail Screen -->
+    <string name="back_content_description">Navigate back</string>
+    <string name="watch_on_youtube">Open in YouTube</string>
+    <string name="source_video_section">Source Video for MP4 Export</string>
+    <string name="source_video_none">No video file attached yet. Pick a local video or direct MP4 URL to trim &amp; download clips.</string>
+    <string name="action_pick_video">Pick Video</string>
+    <string name="action_mp4_url">Direct MP4 URL</string>
+    <string name="action_change_source">Change</string>
+    <string name="action_export_all">Export All MP4s</string>
+    <string name="action_download_srt">Download .SRT</string>
+    <string name="action_download_json">Download .JSON</string>
+    <string name="action_export_mp4">Export MP4</string>
+    <string name="action_play_clip">Play Clip</string>
+    <string name="action_share_clip">Share</string>
+    <string name="action_edit_trim">Trim</string>
+    <string name="action_copy_caption">Copy Caption</string>
+    <string name="action_jump_youtube">Jump at Timestamp</string>
+    <string name="clips_header">AI-Detected Highlights</string>
+    <string name="viral_score_label">Hook Score</string>
+    <string name="exported_badge">Saved to Movies</string>
+
+    <!-- Direct URL Dialog -->
+    <string name="direct_url_dialog_title">Direct MP4 Stream URL</string>
+    <string name="direct_url_dialog_hint">Enter a direct progressive MP4/video URL (e.g. your hosted creator file) to trim and save clips on-device.</string>
+    <string name="direct_url_placeholder">https://example.com/video.mp4</string>
+    <string name="action_attach">Attach Source</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save Trim</string>
+
+    <!-- Trim Dialog -->
+    <string name="trim_dialog_title">Fine-Tune Clip Range</string>
+    <string name="trim_start_label">Start Time</string>
+    <string name="trim_end_label">End Time</string>
+
+    <!-- Projects & Downloads -->
+    <string name="projects_title">Analyzed Projects</string>
+    <string name="projects_empty_title">No Clip Projects Yet</string>
+    <string name="projects_empty_subtitle">Paste a YouTube link in Studio to let Gemini AI automatically discover highlight clips.</string>
+    <string name="downloads_title">Saved Clips &amp; Downloads</string>
+    <string name="downloads_empty_title">No Exported MP4 Clips Yet</string>
+    <string name="downloads_empty_subtitle">Attach a source video in any project and tap Export MP4 to trim and save clips to your device.</string>
+    <string name="action_delete_project">Delete project</string>
+    <string name="action_retry">Retry</string>
+    <string name="close_player">Close player</string>
+</resources>
