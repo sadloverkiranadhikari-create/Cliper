@@ -60,7 +60,7 @@ jobs:
       - name: Create temporary debug keystore
         run: |
           if [ -f "./debug.keystore" ]; then
-            echo "Using existing ./debug.keystore"
+            echo "Temporary ./debug.keystore already exists."
           else
             echo "Generating temporary ./debug.keystore..."
             KEYTOOL_BIN="${JAVA_HOME}/bin/keytool"
@@ -72,7 +72,7 @@ jobs:
               exit 1
             fi
 
-            "$KEYTOOL_BIN" -genkeypair -v \
+            if ! "$KEYTOOL_BIN" -genkeypair \
               -keystore ./debug.keystore \
               -storepass android \
               -alias androiddebugkey \
@@ -80,19 +80,17 @@ jobs:
               -dname "CN=Android Debug, O=Android, C=US" \
               -keyalg RSA \
               -keysize 2048 \
-              -validity 10000 >/dev/null 2>&1
-
-            if [ ! -f "./debug.keystore" ]; then
-              echo "::error::Failed to create ./debug.keystore"
+              -validity 10000; then
+              echo "::error::keytool failed to create ./debug.keystore"
               exit 1
             fi
           fi
 
-          if [ ! -s "./debug.keystore" ]; then
-            echo "::error::./debug.keystore is missing or empty."
+          if [ ! -f "./debug.keystore" ] || [ ! -s "./debug.keystore" ]; then
+            echo "::error::./debug.keystore could not be created or is empty."
             exit 1
           fi
-          echo "Verified temporary debug keystore is present."
+          echo "Verified temporary debug keystore exists."
 
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon

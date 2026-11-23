@@ -6,6 +6,7 @@ import com.example.data.model.ClipFocus
 import com.example.data.model.DurationPreset
 import com.example.data.model.GeneratedClipCandidate
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.Schema
 import com.google.firebase.ai.type.content
@@ -62,6 +63,18 @@ class YouTubeClipAiService {
         focus: ClipFocus,
         durationPreset: DurationPreset
     ): AiClipAnalysisResult {
+        val isFirebaseReady = try {
+            FirebaseApp.getInstance()
+            true
+        } catch (_: IllegalStateException) {
+            false
+        }
+        if (!isFirebaseReady) {
+            throw IllegalStateException(
+                "Firebase is not configured in this APK build (app/google-services.json was missing when built). " +
+                    "Generate the APK from AI Studio or add app/google-services.json to your GitHub repo and rebuild."
+            )
+        }
         val contextLines = buildString {
             appendLine("You are an expert short-form video editor and producer.")
             appendLine("Watch and analyze the attached YouTube video directly to identify the 4 to 6 strongest standalone clip segments.")
